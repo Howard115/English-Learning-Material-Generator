@@ -20,5 +20,5 @@ The script uses OpenAI's GPT model through a Pydantic-based agent system to gene
 
 Key files:
 - `main.py`: Core script orchestrating the full generation pipeline
-- `raw_data.md`: Input text file
+- `raw.md`: Input text file
 - `Exquisite_handout.md`: Final formatted output with colored highlighting
