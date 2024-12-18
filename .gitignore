@@ -170,7 +170,7 @@ cython_debug/
 .vscode/
 
 # Raw data
-raw_data.md
+raw.md
 
 # Output files
 Exquisite_handout.md

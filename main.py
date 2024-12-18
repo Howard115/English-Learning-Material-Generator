@@ -223,7 +223,7 @@ def create_colored_content(content: str) -> str:
 
 # ---- Main Process Functions ----
 def main():
-    input_path = Path("raw_data.md")
+    input_path = Path("raw.md")
     output_path = Path("Exquisite_handout.md")
 
     print("Generating learning materials...")
