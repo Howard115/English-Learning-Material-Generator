@@ -1,23 +1,22 @@
 from pathlib import Path
-from typing import List, Tuple, Dict
-from enum import Enum
+from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass
 import re
 
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
 
-# ---- Constants ----
+# # ---- Constants ----
 DEFAULT_ENGLISH_LEVEL = "intermediate"
-DEFAULT_MAX_VOCAB = 5
-DEFAULT_ANSWER_LENGTH = 300
+# DEFAULT_MAX_VOCAB = 5
+# DEFAULT_ANSWER_LENGTH = 300
 
-# ---- Models and Config Classes ----
-class ContentType(str, Enum):
-    VOCABULARY = "vocabulary"
-    EXAMPLE = "example"
-    EXERCISE = "exercise"
-    DISCUSSION = "discussion"
+# # ---- Models and Config Classes ----
+# class ContentType(str, Enum):
+#     VOCABULARY = "vocabulary"
+#     EXAMPLE = "example"
+#     EXERCISE = "exercise"
+#     DISCUSSION = "discussion"
 
 class VocabularyItem(BaseModel):
     word: str = Field(description="The vocabulary word")
@@ -37,12 +36,12 @@ class ProcessingConfig(BaseModel):
 class AnswerResponse(BaseModel):
     answer: str
     explanation: str
-    additional_tips: str = ""
+    additional_tips: Optional[str] = None
 
 @dataclass
 class AnswerConfig:
-    answer_style: str = "detailed"
-    max_length: int = 300
+    answer_style: str = "humorous"
+    max_length: int = 200
     vocabulary: dict[str, str] = None
     examples: List[str] = None
 
@@ -168,8 +167,8 @@ def get_material_system_prompt(ctx: RunContext[ProcessingConfig]) -> str:
             Your task is to process text and create structured learning materials with:
             - Vocabulary explanations (max {ctx.deps.max_vocab_per_segment} words per segment)
             - Natural example sentences
-            - Practice exercises
-            - Discussion questions
+            - Open-minded practice exercises
+            - Creative discussion questions
             Target English level: {ctx.deps.english_level}
             """
 
@@ -195,12 +194,12 @@ def get_answer_system_prompt(ctx: RunContext[AnswerConfig]) -> str:
     if context:
         context = f"\nUse the following context in your answers when relevant:\n\n{context}\n"
     
-    return f"""You are an intelligent English learning assistant.
-    Your task is to act as a computer science student and provide helpful answers to practice exercises and discussion questions.{context}
+    return f"""
+    Your task is to stand in the perspective of a computer science student and provide helpful answers to practice exercises and discussion questions.{context}
     For each question/exercise:
-    1. Provide a clear and {ctx.deps.answer_style} answer (max {ctx.deps.max_length} chars)
-    2. Include a brief explanation of your reasoning
-    3. Add helpful tips when relevant
+    1. Provide a {ctx.deps.answer_style} answer (max {ctx.deps.max_length} chars)
+    2. Include a brief but thoughtful explanation of your reasoning
+    3. Add helpful tips if needed
     4. Incorporate relevant vocabulary words and examples when possible
     Keep responses educational and encouraging, and help reinforce the vocabulary learning.
     """
