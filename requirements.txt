@@ -1,0 +1,6 @@
+pydantic
+requests
+python-dotenv
+discordwebhook
+newsapi-python
+pydantic-ai
