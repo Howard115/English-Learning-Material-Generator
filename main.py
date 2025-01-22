@@ -2,9 +2,13 @@ from pathlib import Path
 from typing import List, Tuple, Dict, Optional
 from dataclasses import dataclass
 import re
+import os
+import requests
+from dotenv import load_dotenv
 
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, RunContext
+from newsapi import NewsApiClient
 
 # # ---- Constants ----
 DEFAULT_ENGLISH_LEVEL = "intermediate"
@@ -221,7 +225,24 @@ def create_colored_content(content: str) -> str:
     return re.sub(pattern, r'<span style="color: gold">**\1**</span>', content)
 
 # ---- Main Process Functions ----
+def fetch_news() -> str:
+    """Fetch news and return the article URL"""
+    newsapi = NewsApiClient(api_key=os.getenv('NEWS_API_KEY'))
+    top_headlines = newsapi.get_top_headlines(sources='bbc-news', language='en')
+    top_news_url = top_headlines['articles'][0]['url']
+    
+    response = requests.get(f'https://urltomarkdown.herokuapp.com/?url={top_news_url}')
+    with open('raw.md', 'w') as f:
+        f.write(response.text)
+        
+    return top_news_url
+
 def main():
+    load_dotenv()
+
+    print("Fetching news article...")
+    news_url = fetch_news()
+
     input_path = Path("raw.md")
     output_path = Path("Exquisite_handout.md")
 
@@ -235,7 +256,10 @@ def main():
 
     print("Adding color formatting...")
     colored_content = create_colored_content(content_with_answers)
-    output_path.write_text(colored_content, encoding="utf-8")
+    
+    # Add the news URL at the beginning of the content
+    final_content = f"Source Article: {news_url}\n\n{colored_content}"
+    output_path.write_text(final_content, encoding="utf-8")
     
     print(f"\nProcess completed! Final output saved to {output_path}")
 
