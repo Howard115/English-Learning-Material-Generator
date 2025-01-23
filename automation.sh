@@ -8,7 +8,6 @@ last_day=$(ls demo | grep -o 'day[0-9]\+' | sort -V | tail -n 1 | sed 's/day//')
 
 git add .
 git commit -m "update $(ls demo | grep -o 'day[0-9]\+' | sort -V | tail -n 1).md"
-sleep 3
 git push
 
 python3 notify.py
